@@ -15,12 +15,12 @@ const CHAIN = [
   { type: "mixed",    prompt: "COPPER",   answer: "PEPPER",   clue: "A spice that makes you sneeze",                                       },
   { type: "semantic", prompt: "PEPPER",   answer: "SPICE",    clue: "The category of flavoring substances that pepper belongs to",         },
   { type: "phono",    prompt: "SPICE",    answer: "SPLICE",   clue: "To join two pieces by weaving or overlapping the ends",               },
-  { type: "semantic", prompt: "SPLICE",   answer: "ROPE",     clue: "What sailors often splice to join or repair it",                      },
+  { type: "semantic", prompt: "SPLICE",   answer: "ROPE",     clue: "A thick cord made by twisting fibers, often spliced when damaged",    },
   { type: "mixed",    prompt: "ROPE",     answer: "HOPE",     clue: "A feeling of expectation or desire for something to happen",          },
   { type: "semantic", prompt: "HOPE",     answer: "WISH",     clue: "A desire or longing for something, often unattainable",               },
   { type: "phono",    prompt: "WISH",     answer: "FISH",     clue: "An aquatic animal with gills and fins",                               },
   { type: "semantic", prompt: "FISH",     answer: "SCALE",    clue: "The small overlapping plates covering a fish's body",                 },
-  { type: "mixed",    prompt: "SCALE",    answer: "STALE",    clue: "No longer fresh, especially bread or air",                            },
+  { type: "phono",    prompt: "SCALE",    answer: "STALE",    clue: "No longer fresh, especially bread or air",                            },
 ];
 
 const TYPE_META = {
@@ -58,6 +58,21 @@ function normalizePhonetic(str) {
     // Note: K/G NOT normalized - "ankle" vs "angle" are phonetically distinct
 }
 
+// Check if vowel patterns are similar enough (prevents PEPPER/POPPER false matches)
+function vowelsSimilar(word1, word2) {
+  const v1 = word1.toUpperCase().replace(/[^AEIOU]/g, "");
+  const v2 = word2.toUpperCase().replace(/[^AEIOU]/g, "");
+  if (v1.length !== v2.length) return false;
+  // First vowel must match (catches PEPPER/POPPER difference)
+  if (v1.length > 0 && v1[0] !== v2[0]) return false;
+  // At least 50% of vowel positions must match
+  let matches = 0;
+  for (let i = 0; i < v1.length; i++) {
+    if (v1[i] === v2[i]) matches++;
+  }
+  return matches / v1.length >= 0.5;
+}
+
 function isSoundsLike(guess, answer) {
   const gk = phoneticKey(guess);
   const ak = phoneticKey(answer);
@@ -66,13 +81,21 @@ function isSoundsLike(guess, answer) {
   // Normalize phonetically similar consonants
   const gkNorm = normalizePhonetic(gk);
   const akNorm = normalizePhonetic(ak);
-  if (gkNorm === akNorm) return true;
+  if (gkNorm === akNorm) {
+    // Also check vowel patterns aren't too different
+    return vowelsSimilar(guess, answer);
+  }
 
   // Also check if they share the same consonant skeleton with different vowels
   const consonants = s => s.replace(/[AEIOU]/g, "");
   const gkCons = normalizePhonetic(consonants(gk));
   const akCons = normalizePhonetic(consonants(ak));
-  return gkCons === akCons && akCons.length >= 2;
+  if (gkCons === akCons && akCons.length >= 2) {
+    // Require vowel similarity for consonant-skeleton matches too
+    return vowelsSimilar(guess, answer);
+  }
+
+  return false;
 }
 
 function maskWord(word, revealed) {
