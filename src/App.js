@@ -7,12 +7,20 @@ const CHAIN = [
   { type: "phono",    prompt: "PETAL",    answer: "METAL",    clue: "A hard, shiny material used in construction and tools",               },
   { type: "mixed",    prompt: "METAL",    answer: "STEEL",    clue: "A strong alloy used in buildings and bridges",                        },
   { type: "phono",    prompt: "STEEL",    answer: "WHEEL",    clue: "A circular object that rolls or spins",                               },
-  { type: "semantic", prompt: "WHEEL",    answer: "AXLE",     clue: "The rod that passes through the centre of a wheel, letting it spin",  },
-  { type: "mixed",    prompt: "AXLE",     answer: "ANKLE",    clue: "The joint that connects your leg to your foot",                       },
-  { type: "phono",    prompt: "ANKLE",    answer: "ANGLE",    clue: "The measure of space between two lines meeting at a point",           },
-  { type: "semantic", prompt: "ANGLE",    answer: "TRIANGLE", clue: "A three-sided polygon defined by its corners",                        },
-  { type: "phono",    prompt: "TRIANGLE", answer: "TANGLE",   clue: "A knotted, twisted mess",                                            },
-  { type: "mixed",    prompt: "TANGLE",   answer: "MANGLE",   clue: "To twist or damage something badly",                                  },
+  { type: "semantic", prompt: "WHEEL",    answer: "SPOKE",    clue: "One of the thin rods radiating from the hub to the rim",              },
+  { type: "phono",    prompt: "SPOKE",    answer: "SMOKE",    clue: "Visible vapor rising from something burning",                         },
+  { type: "semantic", prompt: "SMOKE",    answer: "FIRE",     clue: "The source that creates smoke when burning",                          },
+  { type: "phono",    prompt: "FIRE",     answer: "WIRE",     clue: "A thin flexible metal strand that conducts electricity",              },
+  { type: "semantic", prompt: "WIRE",     answer: "COPPER",   clue: "A reddish metal commonly used for electrical conductors",             },
+  { type: "mixed",    prompt: "COPPER",   answer: "PEPPER",   clue: "A spice that makes you sneeze",                                       },
+  { type: "semantic", prompt: "PEPPER",   answer: "SPICE",    clue: "The category of flavoring substances that pepper belongs to",         },
+  { type: "phono",    prompt: "SPICE",    answer: "SPLICE",   clue: "To join two pieces by weaving or overlapping the ends",               },
+  { type: "semantic", prompt: "SPLICE",   answer: "ROPE",     clue: "What sailors often splice to join or repair it",                      },
+  { type: "mixed",    prompt: "ROPE",     answer: "HOPE",     clue: "A feeling of expectation or desire for something to happen",          },
+  { type: "semantic", prompt: "HOPE",     answer: "WISH",     clue: "A desire or longing for something, often unattainable",               },
+  { type: "phono",    prompt: "WISH",     answer: "FISH",     clue: "An aquatic animal with gills and fins",                               },
+  { type: "semantic", prompt: "FISH",     answer: "SCALE",    clue: "The small overlapping plates covering a fish's body",                 },
+  { type: "mixed",    prompt: "SCALE",    answer: "STALE",    clue: "No longer fresh, especially bread or air",                            },
 ];
 
 const TYPE_META = {
@@ -268,7 +276,7 @@ export default function App() {
             { icon: "💬", text: "You'll be shown a starting word and a clue describing a related word." },
             { icon: "🔤", text: "Type your answer. If you're stuck, tap 'Reveal a letter' to uncover the next one — but the fewer reveals you need, the better your score." },
             { icon: "⏱️", text: "Answer as quickly as you can. Both speed and the number of letter reveals affect your score." },
-            { icon: "🔗", text: "Each correct answer becomes the starting word for the next round — 12 rounds in total." },
+            { icon: "🔗", text: "Each correct answer becomes the starting word for the next round — 20 rounds in total." },
           ].map((item, i) => (
             <div key={i} className={S.row}>
               <span className="text-base shrink-0">{item.icon}</span>
@@ -387,7 +395,7 @@ export default function App() {
 
           <p className={S.label + " mb-1"}>Your results</p>
           <h2 className="text-2xl font-bold text-white mb-1">Semantic Access Report</h2>
-          <p className="text-zinc-500 text-xs mb-5">Ages {ag} · 12 rounds · 3 access types</p>
+          <p className="text-zinc-500 text-xs mb-5">Ages {ag} · 20 rounds · 3 access types</p>
 
           {/* Score */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center mb-2">
