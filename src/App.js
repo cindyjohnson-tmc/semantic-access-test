@@ -472,15 +472,18 @@ export default function App() {
               {cur.answer.split("").map((letter, i) => {
                 const isRevealed = i < revealed;
                 const userLetter = guess[i - revealed]?.toUpperCase() || "";
+                const isActive = !isRevealed && i === revealed + guess.length && feedback !== "correct" && feedback !== "partial";
                 return (
                   <div
                     key={i}
                     className={`w-10 h-12 flex items-center justify-center text-2xl font-bold rounded border-2 transition
                       ${isRevealed
                         ? 'border-[#39ff6a] bg-zinc-800 text-[#39ff6a]'
-                        : userLetter
-                          ? 'border-zinc-600 bg-zinc-800 text-white'
-                          : 'border-zinc-700 bg-zinc-900 text-zinc-700'
+                        : isActive
+                          ? 'border-[#39ff6a] bg-zinc-800 text-zinc-700 ring-2 ring-[#39ff6a] ring-opacity-50'
+                          : userLetter
+                            ? 'border-zinc-600 bg-zinc-800 text-white'
+                            : 'border-zinc-700 bg-zinc-900 text-zinc-700'
                       }`}
                   >
                     {isRevealed ? letter : userLetter || '_'}
@@ -509,7 +512,7 @@ export default function App() {
               spellCheck="false"
             />
 
-            <p className="text-center text-zinc-600 text-xs">Type to fill in the blanks · Press Enter to submit</p>
+            <p className="text-center text-zinc-600 text-xs">Type to fill in the blanks · Press <span className="text-zinc-500 font-semibold">Enter ↵</span> to submit</p>
           </div>
 
           {feedback === "correct" && <p className={`text-center font-bold text-lg mb-3 ${S.green}`}>✓ Correct!</p>}
