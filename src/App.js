@@ -197,7 +197,7 @@ function GreenBar({ value }) {
 }
 
 export default function App() {
-  const [phase, setPhase]           = useState("intro");
+  const [phase, setPhase]           = useState("welcome"); // welcome → what → how → age → playing → report
   const [age, setAge]               = useState("");
   const [roundIdx, setRoundIdx]     = useState(0);
   const [revealed, setRevealed]     = useState(1);
@@ -270,16 +270,32 @@ export default function App() {
     }
   }, [feedback]);
 
-  // ── INTRO ──
-  if (phase === "intro") return (
+  // ── WELCOME ──
+  if (phase === "welcome") return (
+    <div className={S.page}>
+      <div className={S.card}>
+        <h1 className="text-4xl font-black text-white mb-4 leading-tight tracking-tight">Semantic Access Test</h1>
+        <p className="text-zinc-300 text-lg mb-2 leading-relaxed">
+          Retrieve words by sound, meaning, and both at once.
+        </p>
+        <p className={S.sub + " mb-8"}>
+          ~5 minutes
+        </p>
+        <button onClick={() => setPhase("what")} className={S.btnPrimary}>Next</button>
+      </div>
+    </div>
+  );
+
+  // ── WHAT IT MEASURES ──
+  if (phase === "what") return (
     <div className={S.page + " items-start overflow-y-auto"}>
       <div className={S.cardWide + " my-6"}>
-        <p className={S.label + " mb-3"}>Cognitive Evaluation</p>
-        <h1 className="text-3xl font-bold text-white mb-3 leading-tight">Semantic Access Test</h1>
+        <p className={S.label + " mb-3"}>What this measures</p>
+        <h2 className="text-2xl font-bold text-white mb-4 leading-tight">Lexical access speed</h2>
         <p className={S.sub + " mb-6"}>
-          Measures how quickly your brain retrieves words by sound, meaning, and both at once — a stronger predictor of cognitive performance than vocabulary size.
+          How quickly your brain retrieves words by sound, meaning, and both at once — a stronger predictor of cognitive performance than vocabulary size.
         </p>
-        <div className="grid grid-cols-2 gap-2 mb-6">
+        <div className="grid grid-cols-2 gap-2 mb-8">
           {[
             { stat: "2–4×",        note: "Adults with strong dual-route lexical access acquire a second language 2–4× faster than those who rely on a single route.",                                                                               cite: "Kroll & Stewart, 1994" },
             { stat: "~40%",        note: "Around 40% of tip-of-the-tongue failures — when a word is known but unreachable — are explained by weak phonological retrieval alone.",                                                                   cite: "Brown, 1991" },
@@ -293,21 +309,33 @@ export default function App() {
             </div>
           ))}
         </div>
-        <p className={S.label + " mb-2"}>How it works</p>
-        <div className="space-y-2 mb-6">
+        <button onClick={() => setPhase("how")} className={S.btnPrimary}>Next</button>
+      </div>
+    </div>
+  );
+
+  // ── HOW IT WORKS ──
+  if (phase === "how") return (
+    <div className={S.page}>
+      <div className={S.card}>
+        <p className={S.label + " mb-3"}>How it works</p>
+        <h2 className="text-2xl font-bold text-white mb-6 leading-tight">20 word-chain rounds</h2>
+        <div className="space-y-3 mb-8">
           {[
-            { icon: "💬", text: "You'll be shown a starting word and a clue describing a related word." },
-            { icon: "🔤", text: "Type your answer. If you're stuck, tap 'Reveal a letter' to uncover the next one — but the fewer reveals you need, the better your score." },
-            { icon: "⏱️", text: "Answer as quickly as you can. Both speed and the number of letter reveals affect your score." },
-            { icon: "🔗", text: "Each correct answer becomes the starting word for the next round — 20 rounds in total." },
+            { num: "1", text: "You'll see a starting word and a clue describing a related word." },
+            { num: "2", text: "Type your answer. If stuck, reveal letters one at a time — but your score drops with each reveal." },
+            { num: "3", text: "Answer as fast as you can. Speed and reveals both affect your score." },
+            { num: "4", text: "Each correct answer becomes the next starting word." },
           ].map((item, i) => (
-            <div key={i} className={S.row}>
-              <span className="text-base shrink-0">{item.icon}</span>
-              <span className="text-zinc-300 text-sm">{item.text}</span>
+            <div key={i} className="flex gap-3">
+              <div className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm bg-zinc-800 text-[#39ff6a]">
+                {item.num}
+              </div>
+              <p className="text-zinc-300 text-sm leading-relaxed pt-0.5">{item.text}</p>
             </div>
           ))}
         </div>
-        <button onClick={() => setPhase("age")} className={S.btnPrimary}>Begin session →</button>
+        <button onClick={() => setPhase("age")} className={S.btnPrimary}>Next</button>
       </div>
     </div>
   );
@@ -558,7 +586,7 @@ export default function App() {
             </div>
           </div>
 
-          <button onClick={() => { setPhase("intro"); setResults([]); }} className={S.btnPrimary + " mt-4"}>
+          <button onClick={() => { setPhase("welcome"); setResults([]); }} className={S.btnPrimary + " mt-4"}>
             Start a new session
           </button>
         </div>
