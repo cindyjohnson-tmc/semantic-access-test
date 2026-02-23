@@ -451,13 +451,14 @@ export default function App() {
     return (
       <div className={S.page}>
         <div className={S.card}>
-          <div className="flex justify-between items-center mb-1">
-            <span className={S.label}>
-              {isPractice ? "Practice " : ""}Round {roundIdx+1} of {totalRounds}
-            </span>
-          </div>
-          <div className="h-0.5 bg-zinc-800 rounded-full mb-6">
-            <div className="h-0.5 rounded-full bg-[#39ff6a] transition-all" style={{ width: `${progress}%` }} />
+          {/* Progress bar */}
+          <div className="mb-6">
+            <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-1 rounded-full bg-[#39ff6a] transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+            </div>
+            {isPractice && (
+              <p className="text-center text-zinc-600 text-xs mt-2">Practice round {roundIdx+1} of 3</p>
+            )}
           </div>
 
           <p className={S.label + " mb-1"}>Starting word</p>
