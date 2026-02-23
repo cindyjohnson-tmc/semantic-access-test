@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 
+const PRACTICE_CHAIN = [
+  { type: "phono",    prompt: "NIGHT",    answer: "LIGHT",    clue: "Brightness that lets you see",                                        },
+  { type: "semantic", prompt: "LIGHT",    answer: "DARK",     clue: "The opposite of light, an absence of brightness",                     },
+  { type: "phono",    prompt: "DARK",     answer: "PARK",     clue: "A public green space with trees and grass",                           },
+];
+
 const CHAIN = [
   { type: "phono",    prompt: "BUTTER",   answer: "FLUTTER",  clue: "A light, rapid flapping movement",                                   },
   { type: "phono",    prompt: "FLUTTER",  answer: "FLOWER",   clue: "A blooming plant that bees visit",                                   },
@@ -210,7 +216,13 @@ export default function App() {
   const [report, setReport]         = useState(null);
   const inputRef = useRef(null);
 
-  useEffect(() => { if (phase === "playing" && inputRef.current) inputRef.current.focus(); }, [phase, roundIdx, feedback]);
+  useEffect(() => {
+    if ((phase === "playing" || phase === "practice") && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [phase, roundIdx, feedback]);
+
+  const currentChain = isPractice ? PRACTICE_CHAIN : CHAIN;
 
   function startPractice(sel) {
     setAge(sel);
@@ -232,7 +244,7 @@ export default function App() {
   }
 
   function handleGuess() {
-    const cur = CHAIN[roundIdx];
+    const cur = currentChain[roundIdx];
     const val = guess.trim().toUpperCase();
     if (!val) return;
     const newGC = guessCount + 1;
@@ -257,12 +269,12 @@ export default function App() {
   }
 
   function revealNext() {
-    const cur = CHAIN[roundIdx];
+    const cur = currentChain[roundIdx];
     if (revealed < cur.answer.length) { setRevealed(r => r+1); setFeedback(null); }
   }
 
   function skipRound() {
-    const cur = CHAIN[roundIdx];
+    const cur = currentChain[roundIdx];
     setResults(r => [...r, { type: cur.type, correct: false, partial: false, reveals: revealed, timeMs: Date.now()-roundStart, guesses: guessCount, partialGuess: null }]);
     advance(true);
   }
@@ -411,7 +423,7 @@ export default function App() {
 
   // ── PRACTICE & PLAYING ──
   if (phase === "practice" || phase === "playing") {
-    const cur = CHAIN[roundIdx];
+    const cur = currentChain[roundIdx];
     const totalRounds = isPractice ? 3 : CHAIN.length;
     const progress = (roundIdx / totalRounds) * 100;
 
