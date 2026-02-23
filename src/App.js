@@ -462,10 +462,49 @@ export default function App() {
           <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-4 mb-5">
             <p className={S.label + " mb-2"}>Clue</p>
             <p className="text-zinc-300 text-sm leading-relaxed mb-4">{cur.clue}</p>
-            <div className={`text-3xl font-mono tracking-widest font-bold text-center ${S.green}`}>
-              {maskWord(cur.answer, revealed)}
+
+            {/* Letter boxes */}
+            <div className="flex justify-center gap-1.5 mb-3">
+              {cur.answer.split("").map((letter, i) => {
+                const isRevealed = i < revealed;
+                const userLetter = guess[i]?.toUpperCase() || "";
+                return (
+                  <div
+                    key={i}
+                    className={`w-10 h-12 flex items-center justify-center text-2xl font-bold rounded border-2 transition
+                      ${isRevealed
+                        ? 'border-[#39ff6a] bg-zinc-800 text-[#39ff6a]'
+                        : userLetter
+                          ? 'border-zinc-600 bg-zinc-800 text-white'
+                          : 'border-zinc-700 bg-zinc-900 text-zinc-700'
+                      }`}
+                  >
+                    {isRevealed ? letter : userLetter || '_'}
+                  </div>
+                );
+              })}
             </div>
-            <p className="text-center text-zinc-600 text-xs mt-1">{cur.answer.length} letters</p>
+
+            {/* Hidden input for keyboard capture */}
+            <input
+              ref={inputRef}
+              value={guess}
+              onChange={e => {
+                const val = e.target.value.toUpperCase();
+                if (val.length <= cur.answer.length) setGuess(val);
+              }}
+              onKeyDown={e => {
+                if (e.key === "Enter") handleGuess();
+              }}
+              maxLength={cur.answer.length}
+              className="w-full bg-transparent text-transparent caret-transparent focus:outline-none text-center"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+            />
+
+            <p className="text-center text-zinc-600 text-xs">Type to fill in the blanks · Press Enter to submit</p>
           </div>
 
           {feedback === "correct" && <p className={`text-center font-bold text-lg mb-3 ${S.green}`}>✓ Correct!</p>}
@@ -478,32 +517,16 @@ export default function App() {
           {feedback === "wrong" && <p className="text-center text-red-400 font-semibold mb-3">Not quite — try again</p>}
 
           {feedback !== "correct" && feedback !== "partial" && (
-            <>
-              <div className="flex gap-2 mb-3">
-                <input
-                  ref={inputRef}
-                  value={guess}
-                  onChange={e => setGuess(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && handleGuess()}
-                  placeholder="Type your answer…"
-                  className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white uppercase font-mono text-lg focus:outline-none focus:border-[#39ff6a] transition placeholder-zinc-600"
-                />
-                <button onClick={handleGuess}
-                  className="px-5 py-3 rounded-xl font-bold text-black bg-[#39ff6a] hover:opacity-90 transition text-lg">
-                  →
-                </button>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={revealNext} disabled={revealed >= cur.answer.length}
-                  className="flex-1 border border-zinc-700 text-zinc-400 text-sm py-2.5 rounded-xl hover:border-zinc-500 disabled:opacity-30 transition">
-                  Reveal a letter
-                </button>
-                <button onClick={skipRound}
-                  className="flex-1 border border-zinc-700 text-zinc-500 text-sm py-2.5 rounded-xl hover:border-zinc-500 transition">
-                  Skip
-                </button>
-              </div>
-            </>
+            <div className="flex gap-2">
+              <button onClick={revealNext} disabled={revealed >= cur.answer.length}
+                className="flex-1 border border-zinc-700 text-zinc-400 text-sm py-2.5 rounded-xl hover:border-zinc-500 disabled:opacity-30 transition">
+                Reveal a letter
+              </button>
+              <button onClick={skipRound}
+                className="flex-1 border border-zinc-700 text-zinc-500 text-sm py-2.5 rounded-xl hover:border-zinc-500 transition">
+                Skip
+              </button>
+            </div>
           )}
         </div>
       </div>
