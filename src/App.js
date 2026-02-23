@@ -308,6 +308,23 @@ export default function App() {
   if (phase === "welcome") return (
     <div className={S.page}>
       <div className={S.card}>
+        {/* Icon */}
+        <div className="flex justify-center mb-6">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Connected nodes representing semantic network */}
+            <circle cx="40" cy="20" r="8" stroke="#39ff6a" strokeWidth="2.5" fill="none" />
+            <circle cx="20" cy="50" r="8" stroke="#39ff6a" strokeWidth="2.5" fill="none" />
+            <circle cx="60" cy="50" r="8" stroke="#39ff6a" strokeWidth="2.5" fill="none" />
+            <circle cx="40" cy="65" r="6" stroke="#39ff6a" strokeWidth="2.5" fill="none" />
+
+            {/* Connecting lines */}
+            <line x1="36" y1="26" x2="24" y2="44" stroke="#39ff6a" strokeWidth="2" opacity="0.5" />
+            <line x1="44" y1="26" x2="56" y2="44" stroke="#39ff6a" strokeWidth="2" opacity="0.5" />
+            <line x1="28" y1="52" x2="36" y2="62" stroke="#39ff6a" strokeWidth="2" opacity="0.5" />
+            <line x1="52" y1="52" x2="44" y2="62" stroke="#39ff6a" strokeWidth="2" opacity="0.5" />
+          </svg>
+        </div>
+
         <h1 className="text-4xl font-black text-white mb-4 leading-tight tracking-tight">Semantic Access Test</h1>
         <p className="text-zinc-300 text-lg mb-2 leading-relaxed">
           Retrieve words by sound, meaning, and both at once.
