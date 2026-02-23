@@ -274,7 +274,12 @@ export default function App() {
 
   function revealNext() {
     const cur = currentChain[roundIdx];
-    if (revealed < cur.answer.length) { setRevealed(r => r+1); setFeedback(null); }
+    if (revealed < cur.answer.length) {
+      setRevealed(r => r+1);
+      // Remove first character from guess since it's now revealed
+      setGuess(g => g.substring(1));
+      setFeedback(null);
+    }
   }
 
   function skipRound() {
