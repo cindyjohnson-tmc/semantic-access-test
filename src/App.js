@@ -197,8 +197,9 @@ function GreenBar({ value }) {
 }
 
 export default function App() {
-  const [phase, setPhase]           = useState("welcome"); // welcome → what → how → age → playing → report
+  const [phase, setPhase]           = useState("welcome"); // welcome → what → how → age → practice-intro → practice → practice-complete → playing → report
   const [age, setAge]               = useState("");
+  const [isPractice, setIsPractice] = useState(false);
   const [roundIdx, setRoundIdx]     = useState(0);
   const [revealed, setRevealed]     = useState(1);
   const [guess, setGuess]           = useState("");
@@ -211,8 +212,21 @@ export default function App() {
 
   useEffect(() => { if (phase === "playing" && inputRef.current) inputRef.current.focus(); }, [phase, roundIdx, feedback]);
 
-  function startSession(sel) {
-    setAge(sel); setRoundIdx(0); setRevealed(1); setGuess("");
+  function startPractice(sel) {
+    setAge(sel);
+    setPhase("practice-intro");
+  }
+
+  function beginPractice() {
+    setIsPractice(true);
+    setRoundIdx(0); setRevealed(1); setGuess("");
+    setFeedback(null); setResults([]); setGuessCount(0);
+    setRoundStart(Date.now()); setPhase("practice");
+  }
+
+  function startRealTest() {
+    setIsPractice(false);
+    setRoundIdx(0); setRevealed(1); setGuess("");
     setFeedback(null); setResults([]); setGuessCount(0);
     setRoundStart(Date.now()); setPhase("playing");
   }
@@ -255,7 +269,15 @@ export default function App() {
 
   function advance(fromSkip = false) {
     const next = roundIdx + 1;
-    if (next >= CHAIN.length) {
+
+    // If in practice mode and completed 3 rounds, go to practice-complete
+    if (isPractice && next >= 3) {
+      setPhase("practice-complete");
+      return;
+    }
+
+    // If in real test and completed all rounds, show report
+    if (!isPractice && next >= CHAIN.length) {
       setReport(generateReport(results, age)); setPhase("report");
     } else {
       setRoundIdx(next); setRevealed(1); setGuess("");
@@ -349,7 +371,7 @@ export default function App() {
         <p className={S.sub + " mb-6"}>Used to compare your results to age-matched norms from verbal fluency research.</p>
         <div className="space-y-2">
           {Object.keys(AGE_NORMS).map(a => (
-            <button key={a} onClick={() => startSession(a)}
+            <button key={a} onClick={() => startPractice(a)}
               className="w-full border border-zinc-700 text-white font-semibold py-3 rounded-xl hover:border-[#39ff6a] hover:text-[#39ff6a] transition text-left px-4">
               {a}
             </button>
@@ -359,16 +381,47 @@ export default function App() {
     </div>
   );
 
-  // ── PLAYING ──
-  if (phase === "playing") {
+  // ── PRACTICE INTRO ──
+  if (phase === "practice-intro") return (
+    <div className={S.page}>
+      <div className={S.card}>
+        <p className={S.label + " mb-3"}>Before we begin</p>
+        <h2 className="text-2xl font-bold text-white mb-4 leading-tight">Try 3 practice rounds</h2>
+        <p className={S.sub + " mb-8"}>
+          Get familiar with the format before the real test. Practice rounds don't affect your score.
+        </p>
+        <button onClick={beginPractice} className={S.btnPrimary}>Start practice</button>
+      </div>
+    </div>
+  );
+
+  // ── PRACTICE COMPLETE ──
+  if (phase === "practice-complete") return (
+    <div className={S.page}>
+      <div className={S.card}>
+        <p className={S.label + " mb-3"}>Practice complete</p>
+        <h2 className="text-2xl font-bold text-white mb-4 leading-tight">Nice. You've got it.</h2>
+        <p className={S.sub + " mb-8"}>
+          The real test has 20 rounds. Remember: speed and letter reveals both affect your score.
+        </p>
+        <button onClick={startRealTest} className={S.btnPrimary}>Start the test</button>
+      </div>
+    </div>
+  );
+
+  // ── PRACTICE & PLAYING ──
+  if (phase === "practice" || phase === "playing") {
     const cur = CHAIN[roundIdx];
-    const progress = (roundIdx / CHAIN.length) * 100;
+    const totalRounds = isPractice ? 3 : CHAIN.length;
+    const progress = (roundIdx / totalRounds) * 100;
 
     return (
       <div className={S.page}>
         <div className={S.card}>
           <div className="flex justify-between items-center mb-1">
-            <span className={S.label}>Round {roundIdx+1} of {CHAIN.length}</span>
+            <span className={S.label}>
+              {isPractice ? "Practice " : ""}Round {roundIdx+1} of {totalRounds}
+            </span>
           </div>
           <div className="h-0.5 bg-zinc-800 rounded-full mb-6">
             <div className="h-0.5 rounded-full bg-[#39ff6a] transition-all" style={{ width: `${progress}%` }} />
