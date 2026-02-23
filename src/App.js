@@ -245,20 +245,24 @@ export default function App() {
 
   function handleGuess() {
     const cur = currentChain[roundIdx];
-    const val = guess.trim().toUpperCase();
-    if (!val) return;
+    const userInput = guess.trim().toUpperCase();
+    if (!userInput) return;
     const newGC = guessCount + 1;
     setGuessCount(newGC);
 
-    const isCorrect = val === cur.answer.toUpperCase();
-    const isPartial = !isCorrect && isSoundsLike(val, cur.answer);
+    // Combine revealed prefix with user's input to get full word
+    const revealedPrefix = cur.answer.substring(0, revealed).toUpperCase();
+    const fullGuess = revealedPrefix + userInput;
+
+    const isCorrect = fullGuess === cur.answer.toUpperCase();
+    const isPartial = !isCorrect && isSoundsLike(fullGuess, cur.answer);
 
     if (isCorrect) {
       setResults(r => [...r, { type: cur.type, correct: true, partial: false, reveals: revealed-1, timeMs: Date.now()-roundStart, guesses: newGC, partialGuess: null }]);
       setFeedback("correct");
       setGuess("");
     } else if (isPartial) {
-      setResults(r => [...r, { type: cur.type, correct: false, partial: true, reveals: revealed-1, timeMs: Date.now()-roundStart, guesses: newGC, partialGuess: val }]);
+      setResults(r => [...r, { type: cur.type, correct: false, partial: true, reveals: revealed-1, timeMs: Date.now()-roundStart, guesses: newGC, partialGuess: fullGuess }]);
       setFeedback("partial");
       setGuess("");
     } else {
@@ -467,7 +471,7 @@ export default function App() {
             <div className="flex justify-center gap-1.5 mb-3">
               {cur.answer.split("").map((letter, i) => {
                 const isRevealed = i < revealed;
-                const userLetter = guess[i]?.toUpperCase() || "";
+                const userLetter = guess[i - revealed]?.toUpperCase() || "";
                 return (
                   <div
                     key={i}
@@ -491,12 +495,13 @@ export default function App() {
               value={guess}
               onChange={e => {
                 const val = e.target.value.toUpperCase();
-                if (val.length <= cur.answer.length) setGuess(val);
+                const maxLen = cur.answer.length - revealed;
+                if (val.length <= maxLen) setGuess(val);
               }}
               onKeyDown={e => {
                 if (e.key === "Enter") handleGuess();
               }}
-              maxLength={cur.answer.length}
+              maxLength={cur.answer.length - revealed}
               className="w-full bg-transparent text-transparent caret-transparent focus:outline-none text-center"
               autoComplete="off"
               autoCorrect="off"
