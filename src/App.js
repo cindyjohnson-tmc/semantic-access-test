@@ -476,23 +476,27 @@ export default function App() {
             {/* Letter boxes */}
             <div className="flex justify-center gap-1.5 mb-3">
               {cur.answer.split("").map((letter, i) => {
+                // Show full answer in green if correct or partial
+                const showAnswer = feedback === "correct" || feedback === "partial";
                 const isRevealed = i < revealed;
                 const userLetter = guess[i - revealed]?.toUpperCase() || "";
-                const isActive = !isRevealed && i === revealed + guess.length && feedback !== "correct" && feedback !== "partial";
+                const isActive = !isRevealed && i === revealed + guess.length && !showAnswer;
                 return (
                   <div
                     key={i}
                     className={`w-10 h-12 flex items-center justify-center text-2xl font-bold rounded border-2 transition
-                      ${isRevealed
+                      ${showAnswer
                         ? 'border-[#39ff6a] bg-zinc-800 text-[#39ff6a]'
-                        : isActive
-                          ? 'border-[#39ff6a] bg-zinc-800 text-zinc-700 ring-2 ring-[#39ff6a] ring-opacity-50'
-                          : userLetter
-                            ? 'border-zinc-600 bg-zinc-800 text-white'
-                            : 'border-zinc-700 bg-zinc-900 text-zinc-700'
+                        : isRevealed
+                          ? 'border-[#39ff6a] bg-zinc-800 text-[#39ff6a]'
+                          : isActive
+                            ? 'border-[#39ff6a] bg-zinc-800 text-zinc-700 ring-2 ring-[#39ff6a] ring-opacity-50'
+                            : userLetter
+                              ? 'border-zinc-600 bg-zinc-800 text-white'
+                              : 'border-zinc-700 bg-zinc-900 text-zinc-700'
                       }`}
                   >
-                    {isRevealed ? letter : userLetter || '_'}
+                    {showAnswer ? letter : isRevealed ? letter : userLetter || '_'}
                   </div>
                 );
               })}
